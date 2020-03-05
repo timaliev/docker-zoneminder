@@ -18,6 +18,7 @@ RUN echo "deb http://ppa.launchpad.net/iconnor/zoneminder-1.34/ubuntu `cat /etc/
                                         dialog \
                                         ntpdate \
                                         ffmpeg \
+					ssmtp \
 					libyaml-perl \
 					libjson-perl \
 					make \	
