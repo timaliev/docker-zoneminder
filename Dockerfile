@@ -83,7 +83,7 @@ RUN perl -MCPAN -e "install Net::WebSocket::Server"
 RUN perl -MCPAN -e "install LWP::Protocol::https"
 RUN perl -MCPAN -e "install Net::MQTT::Simple"
 
-VOLUME /var/backups /var/cache/zoneminder /etc/zm 
+VOLUME /var/backups /var/cache/zoneminder /etc/zm /config
 # to allow access from outside of the container  to the container service
 # at that ports need to allow access from firewall if need to access it outside of the server. 
 EXPOSE 80 9000 6802
