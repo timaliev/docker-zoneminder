@@ -40,6 +40,16 @@ or in yml:
 
 Default value is America/New_York .
 
+## Other environment variable that can be define at docker run command for zoneminder image
+
+     -e ZM_DB_HOST=db
+     
+     -e ZM_DB_NAME=zm 
+     
+     -e ZM_DB_USER=zmuser
+     
+     -e ZM_DB_PASS=zmpass
+
 ## Branch Available at the moment 
 
 quantumobject/docker-zoneminder:1.32
