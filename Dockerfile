@@ -5,6 +5,7 @@ LABEL maintainer="Angel Rodriguez <angel@quantumobject.com>"
 
 ENV TZ America/New_York
 ENV ZM_DB_HOST db
+ENV ZM_DB_NAME zm 
 ENV ZM_DB_USER zmuser
 ENV ZM_DB_PASS zmpass
 
