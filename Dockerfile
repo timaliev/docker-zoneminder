@@ -4,6 +4,11 @@ FROM quantumobject/docker-baseimage:18.04
 LABEL maintainer="Angel Rodriguez <angel@quantumobject.com>"
 
 ENV TZ America/New_York
+ENV ZM_DB_HOST db
+ENV ZM_DB_NAME zm 
+ENV ZM_DB_USER zmuser
+ENV ZM_DB_PASS zmpass
+
 
 # Update the container
 # Installation of nesesary package/software for this containers...
@@ -18,10 +23,12 @@ RUN echo "deb http://ppa.launchpad.net/iconnor/zoneminder-1.34/ubuntu `cat /etc/
                                         dialog \
                                         ntpdate \
                                         ffmpeg \
+					ssmtp \
 					libyaml-perl \
 					libjson-perl \
 					make \	
 					gcc \
+					net-tools \
 					build-essential \
                     && apt-get clean \
                     && rm -rf /tmp/* /var/tmp/*  \
@@ -78,7 +85,7 @@ RUN perl -MCPAN -e "install Net::WebSocket::Server"
 RUN perl -MCPAN -e "install LWP::Protocol::https"
 RUN perl -MCPAN -e "install Net::MQTT::Simple"
 
-VOLUME /var/backups /var/cache/zoneminder /config
+VOLUME /var/backups /var/cache/zoneminder /etc/zm /config
 # to allow access from outside of the container  to the container service
 # at that ports need to allow access from firewall if need to access it outside of the server. 
 EXPOSE 80 9000 6802

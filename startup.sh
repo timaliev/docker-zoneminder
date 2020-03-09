@@ -22,6 +22,10 @@ MYSQL_ROOT=${MYSQL_ROOT:-root}
 sed  -i "s|MYSQL_ROOT_PASSWORD=mysqlpsswd|MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD|" /etc/zm/zm.conf
 #if ZM_SERVER_HOST variable is provided in container use it as is, if not left 02-multiserver.conf unchanged
 if [ -v ZM_SERVER_HOST ]; then sed -i "s|#ZM_SERVER_HOST=|ZM_SERVER_HOST=${ZM_SERVER_HOST}|" /etc/zm/conf.d/02-multiserver.conf; fi
+# relate to /etc/zm/zm.conf and db configuration
+sed  -i "s|ZM_DB_NAME=.*|ZM_DB_NAME=${ZM_DB_NAME}|" /etc/zm/zm.conf
+sed  -i "s|ZM_DB_USER=.*|ZM_DB_USER=${ZM_DB_USER}|" /etc/zm/zm.conf
+sed  -i "s|ZM_DB_PASS=.*|ZM_DB_PASS=${ZM_DB_PASS}|" /etc/zm/zm.conf
 
 # Returns true once mysql can connect.
 mysql_ready() {
@@ -60,7 +64,8 @@ else
           echo "waiting for mysql ..."
         done
         echo "SET GLOBAL sql_mode = 'NO_ENGINE_SUBSTITUTION';" | mysql -u $MYSQL_ROOT -p$MYSQL_ROOT_PASSWORD -h $ZM_DB_HOST
-        mysql -u $MYSQL_ROOT -p$MYSQL_ROOT_PASSWORD -h $ZM_DB_HOST < /usr/share/zoneminder/db/zm_create.sql   
+        mysql -u $MYSQL_ROOT -p$MYSQL_ROOT_PASSWORD -h $ZM_DB_HOST < /usr/share/zoneminder/db/zm_create.sql 
+	mysql -u $MYSQL_ROOT -p$MYSQL_ROOT_PASSWORD -h $ZM_DB_HOST -e "grant all on $ZM_DB_NAME.* to '$ZM_DB_USER'@$ZM_DB_HOST identified by '$ZM_DB_PASS';"
         date > /var/cache/zoneminder/dbcreated
         #needed to fix problem with ubuntu ... and cron 
         update-locale
