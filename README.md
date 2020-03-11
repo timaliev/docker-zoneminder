@@ -49,6 +49,8 @@ Default value is America/New_York .
      -e ZM_DB_USER=zmuser
      
      -e ZM_DB_PASS=zmpass
+     
+     -e ZM_DB_PORT=3306
 
 ## Branch Available at the moment 
 
