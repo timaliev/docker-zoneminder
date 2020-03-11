@@ -8,6 +8,7 @@ ENV ZM_DB_HOST db
 ENV ZM_DB_NAME zm 
 ENV ZM_DB_USER zmuser
 ENV ZM_DB_PASS zmpass
+ENV ZM_DB_PORT 3306
 
 
 # Update the container
