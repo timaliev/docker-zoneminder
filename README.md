@@ -52,12 +52,13 @@ Default value is America/New_York .
      
      -e ZM_DB_PORT=3306
      
-## make sure that value for ZM_DB_  and MYSQL_ are the same : 
+## Make sure that value for ZM_DB_  and MYSQL_ are the same : 
 
     ZM_DB_NAME ==> MYSQL_DATABASE
     ZM_DB_USER ==> MYSQL_USER
     ZM_DB_PASS ==> MYSQL_PASSWORD
-
+    .......... ==> ........... 
+   
 ## Branch Available at the moment 
 
 quantumobject/docker-zoneminder:1.32
