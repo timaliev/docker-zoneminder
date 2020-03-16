@@ -31,7 +31,7 @@ grep -q ZM_DB_PORT /etc/zm/zm.conf || echo ZM_DB_PORT=$ZM_DB_PORT >> /etc/zm/zm.
 
 # Returns true once mysql can connect.
 mysql_ready() {
-  mysqladmin ping --host=$ZM_DB_HOST --port=$ZM_DB_PORT --user=$MYSQL_ROOT --password=$MYSQL_ROOT_PASSWORD > /dev/null 2>&1
+  mysqladmin ping --host=$ZM_DB_HOST --port=$ZM_DB_PORT --user=$ZM_DB_USER --password=$ZM_DB_PASS > /dev/null 2>&1
 }
 
 # Handle the zmeventnotification.ini file
@@ -66,7 +66,8 @@ else
           echo "waiting for mysql ..."
         done
         echo "SET GLOBAL sql_mode = 'NO_ENGINE_SUBSTITUTION';" | mysql -u $MYSQL_ROOT -p$MYSQL_ROOT_PASSWORD -h $ZM_DB_HOST -P$ZM_DB_PORT
-        mysql -u $MYSQL_ROOT -p$MYSQL_ROOT_PASSWORD -h $ZM_DB_HOST -P$ZM_DB_PORT < /usr/share/zoneminder/db/zm_create.sql 
+        mysqladmin -u $MYSQL_ROOT -p$MYSQL_ROOT_PASSWORD -h $ZM_DB_HOST -P$ZM_DB_PORT create $ZM_DB_NAME
+	mysql -u $MYSQL_ROOT -p$MYSQL_ROOT_PASSWORD -h $ZM_DB_HOST -P$ZM_DB_PORT $ZM_DB_NAME < /usr/share/zoneminder/db/zm_create.sql 
 	mysql -u $MYSQL_ROOT -p$MYSQL_ROOT_PASSWORD -h $ZM_DB_HOST -P$ZM_DB_PORT -e "grant all on $ZM_DB_NAME.* to '$ZM_DB_USER'@$ZM_DB_HOST identified by '$ZM_DB_PASS';"
         date > /var/cache/zoneminder/dbcreated
         #needed to fix problem with ubuntu ... and cron 
