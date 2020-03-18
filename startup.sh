@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 set -e
 
 #trays to fix problem with https://github.com/QuantumObject/docker-zoneminder/issues/22
@@ -30,17 +29,15 @@ sed  -i "s|ZM_DB_PORT=.*|ZM_DB_PORT=${ZM_DB_PORT}|" /etc/zm/zm.conf
 grep -q ZM_DB_PORT /etc/zm/zm.conf || echo ZM_DB_PORT=$ZM_DB_PORT >> /etc/zm/zm.conf
 
 
-# if ZM_DB_NAME different that zm
-cp /usr/share/zoneminder/db/zm_create.sql /usr/share/zoneminder/db/zm_create.sql.backup
-sed -i "s|-- Host: localhost Database: .*|-- Host: localhost Database: ${ZM_DB_NAME}|" /usr/share/zoneminder/db/zm_create.sql
-sed -i "s|-- Current Database: .*|-- Current Database: ${ZM_DB_NAME}|" /usr/share/zoneminder/db/zm_create.sql
-sed -i "s|CREATE DATABASE \/\*\!32312 IF NOT EXISTS\*\/ .*|CREATE DATABASE \/\*\!32312 IF NOT EXISTS\*\/ \`${ZM_DB_NAME}\` \;|" /usr/share/zoneminder/db/zm_create.sql
-sed -i "s|USE .*|USE ${ZM_DB_NAME} \;|" /usr/share/zoneminder/db/zm_create.sql
-
 # Returns true once mysql can connect.
 mysql_ready() {
   mysqladmin ping --host=$ZM_DB_HOST --port=$ZM_DB_PORT --user=$ZM_DB_USER --password=$ZM_DB_PASS > /dev/null 2>&1
 }
+
+#check if Directory inside of /var/cache/zoneminder are present.
+if [ ! -d /var/cache/zoneminder/events ]; then
+     mkdir -p /var/cache/zoneminder/{events,images,temp,cache}
+fi
 
 # Handle the zmeventnotification.ini file
 if [ -f /config/zmeventnotification.ini ]; then
@@ -51,28 +48,29 @@ if [ -f /config/zmeventnotification.ini ]; then
    ln -sf /config/zmeventnotification.ini /etc/zm/zmeventnotification.ini
 fi
 
-if [ -f /var/cache/zoneminder/configured ]; then
+chown -R root:www-data /var/cache/zoneminder /etc/zm/zm.conf
+chmod -R 770 /var/cache/zoneminder /etc/zm/zm.conf
+
+# waiting for mysql
+while !(mysql_ready)
+do
+   sleep 3
+   echo "waiting for mysql ..."
+done
+
+EMPTYDATABASE=$(mysql -u$ZM_DB_USER -p$ZM_DB_PASS --host=$ZM_DB_HOST --port=$ZM_DB_PORT --batch --skip-column-names -e "use ${ZM_DB_NAME} ; show tables;" | wc -l )
+# [ -f /var/cache/zoneminder/configured ]
+if [[ $EMPTYDATABASE != 0 ]]; then
         echo 'already configured.'
-        while !(mysql_ready)
-        do
-          sleep 3
-          echo "waiting for mysql ..."
-        done
         rm -rf /var/run/zm/* 
 	/sbin/zm.sh&
-else 
-        #check if Directory inside of /var/cache/zoneminder are present.
-        if [ ! -d /var/cache/zoneminder/events ]; then
-           mkdir -p /var/cache/zoneminder/{events,images,temp,cache}
-        fi
-        
-        chown -R root:www-data /var/cache/zoneminder /etc/zm/zm.conf
-        chmod -R 770 /var/cache/zoneminder /etc/zm/zm.conf
-        while !(mysql_ready)
-        do
-          sleep 3
-          echo "waiting for mysql ..."
-        done
+else  
+        # if ZM_DB_NAME different that zm
+        cp /usr/share/zoneminder/db/zm_create.sql /usr/share/zoneminder/db/zm_create.sql.backup
+        sed -i "s|-- Host: localhost Database: .*|-- Host: localhost Database: ${ZM_DB_NAME}|" /usr/share/zoneminder/db/zm_create.sql
+        sed -i "s|-- Current Database: .*|-- Current Database: ${ZM_DB_NAME}|" /usr/share/zoneminder/db/zm_create.sql
+        sed -i "s|CREATE DATABASE \/\*\!32312 IF NOT EXISTS\*\/ .*|CREATE DATABASE \/\*\!32312 IF NOT EXISTS\*\/ \`${ZM_DB_NAME}\` \;|" /usr/share/zoneminder/db/zm_create.sql
+        sed -i "s|USE .*|USE ${ZM_DB_NAME} \;|" /usr/share/zoneminder/db/zm_create.sql
         echo "SET GLOBAL sql_mode = 'NO_ENGINE_SUBSTITUTION';" | mysql -u $MYSQL_ROOT -p$MYSQL_ROOT_PASSWORD -h $ZM_DB_HOST -P$ZM_DB_PORT
 	mysql -u $MYSQL_ROOT -p$MYSQL_ROOT_PASSWORD -h $ZM_DB_HOST -P$ZM_DB_PORT $ZM_DB_NAME < /usr/share/zoneminder/db/zm_create.sql 
 	mysql -u $MYSQL_ROOT -p$MYSQL_ROOT_PASSWORD -h $ZM_DB_HOST -P$ZM_DB_PORT -e "grant all on $ZM_DB_NAME.* to '$ZM_DB_USER'@$ZM_DB_HOST identified by '$ZM_DB_PASS';"
