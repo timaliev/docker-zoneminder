@@ -51,9 +51,9 @@ if [ -f /config/zmeventnotification.ini ]; then
    ln -sf /config/zmeventnotification.ini /etc/zm/zmeventnotification.ini
 fi
 
-NEWDBMISSING=$(mysql -u$ZM_DB_USER -p$ZM_DB_PASS --host=$ZM_DB_HOST --port=$ZM_DB_PORT --batch --skip-column-names -e "SHOW DATABASES LIKE '"$ZM_DB_NAME"';" | grep "$ZM_DB_NAME" > /dev/null; echo "$?")
+EMPTYDATABASE=$(mysql -u$ZM_DB_USER -p$ZM_DB_PASS --host=$ZM_DB_HOST --port=$ZM_DB_PORT --batch --skip-column-names -e "use ${ZM_DB_NAME} ; show tables;" | wc -l )
 # [ -f /var/cache/zoneminder/configured ]
-if [[ $NEWDBMISSING == 0 ]]; then
+if [[ $EMPTYDATABASE != 0 ]]; then
         echo 'already configured.'
         while !(mysql_ready)
         do
