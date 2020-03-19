@@ -68,8 +68,11 @@ quantumobject/docker-zoneminder:1.34
 ## Volume for zoneminder container 
 
    -v /home/linux_user/zm/zoneminder:/var/cache/zoneminder
-   -v /home/linux_user/zm/etc_zm:/etc/zm 
+   
+   -v /home/linux_user/zm/etc_zm:/etc/zm
+   
    -v /home/linux_user/zm/config:/config
+   
    -v /home/linux_user/zm/log:/var/log/zm
 
 ## Accessing the Zoneminder applications
