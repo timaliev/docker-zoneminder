@@ -23,8 +23,8 @@ To run with MySQL in a separate container use the command below:
 
 ```bash
 docker network create net
-docker run -d -e TZ=America/New_York -e MYSQL_USER=zmuser -e MYSQL_PASSWORD=zmpass -e MYSQL_DATABASE=zm -e MYSQL_ROOT_PASSWORD=mysqlpsswd -e MYSQL_ROOT_HOST=% --net net --name db mysql/mysql-server:5.7
-echo "wait until MySQL startup..."
+docker run -d -e TZ=America/New_York -e MYSQL_USER=zmuser -e MYSQL_PASSWORD=zmpass -e MYSQL_DATABASE=zm -e MYSQL_ROOT_HOST=% --net net --name db mysql/mysql-server:5.7 --sql-mode=""
+
 docker run -d --shm-size=4096m -e TZ=America/New_York -e ZM_DB_HOST=db --net net --name zm -p 80:80 quantumobject/docker-zoneminder:1.34
 ```
 
@@ -65,6 +65,16 @@ quantumobject/docker-zoneminder:1.32
 
 quantumobject/docker-zoneminder:1.34
 
+## Volume for zoneminder container 
+
+   -v /home/linux_user/zm/zoneminder:/var/cache/zoneminder
+   
+   -v /home/linux_user/zm/etc_zm:/etc/zm
+   
+   -v /home/linux_user/zm/config:/config
+   
+   -v /home/linux_user/zm/log:/var/log/zm
+
 ## Accessing the Zoneminder applications
 
 After that check with your browser at addresses plus the port assigned by docker:
@@ -94,6 +104,7 @@ services:
   db:
     image: mysql/mysql-server:5.7
     hostname: db
+    command: --sql_mode=''
     networks:
       net:
         aliases:
@@ -106,7 +117,6 @@ services:
      - MYSQL_USER=zmuser
      - MYSQL_PASSWORD=zmpass
      - MYSQL_DATABASE=zm
-     - MYSQL_ROOT_PASSWORD=mysqlpsswd
      - MYSQL_ROOT_HOST=%
     deploy:
       mode: replicated
@@ -122,7 +132,6 @@ services:
       - net
     volumes:
       - /var/empty
-      - $PWD/backups:/var/backups
       - $PWD/zoneminder:/var/cache/zoneminder
       - type: tmpfs
         target: /dev/shm
@@ -147,7 +156,6 @@ services:
       - net
     volumes:
       - /var/empty
-      - $PWD/backups:/var/backups
       - $PWD/zoneminder:/var/cache/zoneminder
       - type: tmpfs
         target: /dev/shm
@@ -199,7 +207,6 @@ above docker-compose.yml stack example asume a directory structure at $PWD as is
 ```bash
 $PWD/mysql      # (MySQL Data, drwxr-xr-x 6   27 27)
 $PWD/zoneminder # (directory for images, drwxrwx--- 5 root 33)
-$PWD/backup     # (directory for backups, drwxr-xr-x 2 root root)
 $PWD/conf       # (configuration files, drwxrwxr-x  7 1000 1000, only conf/mysql/my.cnf is required)
 cat conf/mysql/my.cnf
 # For advice on how to change settings please see

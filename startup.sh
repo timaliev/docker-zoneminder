@@ -9,18 +9,18 @@ chown www-data:www-data /var/run/zm
 
 # set the memory limit of php
 sed  -i "s|memory_limit = .*|memory_limit = ${PHP_MEMORY_LIMIT:-512M}|" /etc/php/7.2/apache2/php.ini
+
 #to fix problem with data.timezone that appear at 1.28.108 for some reason
 sed  -i "s|\;date.timezone =|date.timezone = \"${TZ:-America/New_York}\"|" /etc/php/7.2/apache2/php.ini
 echo ${TZ:-America/New_York} > /etc/timezone
+
 #if ZM_DB_HOST variable is provided in container use it as is, if not left as localhost
 ZM_DB_HOST=${ZM_DB_HOST:-localhost}
 sed  -i "s|ZM_DB_HOST=localhost|ZM_DB_HOST=$ZM_DB_HOST|" /etc/zm/zm.conf
-#if MYSQL_ROOT_PASSWORD variable is provided in container use it as is, if not left as mysqlpsswd
-MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-mysqlpsswd}
-MYSQL_ROOT=${MYSQL_ROOT:-root}
-sed  -i "s|MYSQL_ROOT_PASSWORD=mysqlpsswd|MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD|" /etc/zm/zm.conf
+
 #if ZM_SERVER_HOST variable is provided in container use it as is, if not left 02-multiserver.conf unchanged
 if [ -v ZM_SERVER_HOST ]; then sed -i "s|#ZM_SERVER_HOST=|ZM_SERVER_HOST=${ZM_SERVER_HOST}|" /etc/zm/conf.d/02-multiserver.conf; fi
+
 # relate to /etc/zm/zm.conf and db configuration
 sed  -i "s|ZM_DB_NAME=.*|ZM_DB_NAME=${ZM_DB_NAME}|" /etc/zm/zm.conf
 sed  -i "s|ZM_DB_USER=.*|ZM_DB_USER=${ZM_DB_USER}|" /etc/zm/zm.conf
@@ -58,6 +58,7 @@ do
    echo "waiting for mysql ..."
 done
 
+# check if database is empty and fill it if necessary 
 EMPTYDATABASE=$(mysql -u$ZM_DB_USER -p$ZM_DB_PASS --host=$ZM_DB_HOST --port=$ZM_DB_PORT --batch --skip-column-names -e "use ${ZM_DB_NAME} ; show tables;" | wc -l )
 # [ -f /var/cache/zoneminder/configured ]
 if [[ $EMPTYDATABASE != 0 ]]; then
@@ -71,12 +72,14 @@ else
         sed -i "s|-- Current Database: .*|-- Current Database: ${ZM_DB_NAME}|" /usr/share/zoneminder/db/zm_create.sql
         sed -i "s|CREATE DATABASE \/\*\!32312 IF NOT EXISTS\*\/ .*|CREATE DATABASE \/\*\!32312 IF NOT EXISTS\*\/ \`${ZM_DB_NAME}\` \;|" /usr/share/zoneminder/db/zm_create.sql
         sed -i "s|USE .*|USE ${ZM_DB_NAME} \;|" /usr/share/zoneminder/db/zm_create.sql
-        echo "SET GLOBAL sql_mode = 'NO_ENGINE_SUBSTITUTION';" | mysql -u $MYSQL_ROOT -p$MYSQL_ROOT_PASSWORD -h $ZM_DB_HOST -P$ZM_DB_PORT
-	mysql -u $MYSQL_ROOT -p$MYSQL_ROOT_PASSWORD -h $ZM_DB_HOST -P$ZM_DB_PORT $ZM_DB_NAME < /usr/share/zoneminder/db/zm_create.sql 
-	mysql -u $MYSQL_ROOT -p$MYSQL_ROOT_PASSWORD -h $ZM_DB_HOST -P$ZM_DB_PORT -e "grant all on $ZM_DB_NAME.* to '$ZM_DB_USER'@$ZM_DB_HOST identified by '$ZM_DB_PASS';"
+       
+        # prep the database for zoneminder
+	mysql -u $ZM_DB_USER -p$ZM_DB_PASS -h $ZM_DB_HOST -P$ZM_DB_PORT $ZM_DB_NAME < /usr/share/zoneminder/db/zm_create.sql 
         date > /var/cache/zoneminder/dbcreated
-        #needed to fix problem with ubuntu ... and cron 
+        
+	#needed to fix problem with ubuntu ... and cron 
         update-locale
+	
         date > /var/cache/zoneminder/configured
         zmupdate.pl
         rm -rf /var/run/zm/* 
