@@ -14,7 +14,7 @@ adduser www-data video
 
 # create backup for /etc/zm  in case -v delete all the data at /etc/zm
 mkdir -p /etc/backup_zm_conf
-cp -R /etc/zm /etc/backup_zm_conf/
+cp -R /etc/zm/* /etc/backup_zm_conf/
 
 #to clear some data before saving this layer ...a docker image
 rm -R /var/www/html
