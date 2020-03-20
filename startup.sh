@@ -20,10 +20,6 @@ if [ ! -f /etc/zm/zm.conf ]; then
 	cp -R /etc/backup_zm_conf/* /etc/zm
 fi
 
-#if ZM_DB_HOST variable is provided in container use it as is, if not left as localhost
-# ZM_DB_HOST=${ZM_DB_HOST:-localhost}
-# sed  -i "s|ZM_DB_HOST=localhost|ZM_DB_HOST=$ZM_DB_HOST|" /etc/zm/zm.conf
-
 #if ZM_SERVER_HOST variable is provided in container use it as is, if not left 02-multiserver.conf unchanged
 if [ -v ZM_SERVER_HOST ]; then sed -i "s|#ZM_SERVER_HOST=|ZM_SERVER_HOST=${ZM_SERVER_HOST}|" /etc/zm/conf.d/02-multiserver.conf; fi
 
