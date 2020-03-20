@@ -14,6 +14,12 @@ sed  -i "s|memory_limit = .*|memory_limit = ${PHP_MEMORY_LIMIT:-512M}|" /etc/php
 sed  -i "s|\;date.timezone =|date.timezone = \"${TZ:-America/New_York}\"|" /etc/php/7.2/apache2/php.ini
 echo ${TZ:-America/New_York} > /etc/timezone
 
+# copy from backup of /etc/zm if config files missing .. 
+if [ ! -f /etc/zm/zm.conf ]; then
+	mkdir -p /etc/zm
+	cp -R /etc/backup_zm_conf/* /etc/zm
+fi
+
 #if ZM_DB_HOST variable is provided in container use it as is, if not left as localhost
 ZM_DB_HOST=${ZM_DB_HOST:-localhost}
 sed  -i "s|ZM_DB_HOST=localhost|ZM_DB_HOST=$ZM_DB_HOST|" /etc/zm/zm.conf
@@ -48,8 +54,8 @@ if [ -f /config/zmeventnotification.ini ]; then
    ln -sf /config/zmeventnotification.ini /etc/zm/zmeventnotification.ini
 fi
 
-chown -R root:www-data /var/cache/zoneminder /etc/zm/zm.conf
-chmod -R 770 /var/cache/zoneminder /etc/zm/zm.conf
+chown -R root:www-data /var/cache/zoneminder /etc/zm
+chmod -R 770 /var/cache/zoneminder /etc/zm
 
 # waiting for mysql
 while !(mysql_ready)
