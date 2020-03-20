@@ -51,8 +51,8 @@ if [ -f /config/zmeventnotification.ini ]; then
    ln -sf /config/zmeventnotification.ini /etc/zm/zmeventnotification.ini
 fi
 
-chown -R root:www-data /var/cache/zoneminder /etc/zm
-chmod -R 770 /var/cache/zoneminder /etc/zm
+chown -R root:www-data /var/cache/zoneminder /etc/zm /var/log/zm
+chmod -R 770 /var/cache/zoneminder /etc/zm /var/log/zm
 
 # waiting for mysql
 while !(mysql_ready)
