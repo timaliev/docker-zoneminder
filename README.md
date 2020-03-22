@@ -31,9 +31,9 @@ docker run -d --shm-size=4096m -e TZ=America/New_York -e ZM_DB_HOST=db --net net
 ## For different newest version of database mysql and mariadb
 
 ```bash
-docker run -d .................................. -e MYSQL_RANDOM_ROOT_PASSWORD=yes --net net --name db mysql/mysql-server --disable-log-bin --default-authentication-plugin=mysql_native_password
+docker run -d .....-....... -e MYSQL_RANDOM_ROOT_PASSWORD=yes --net net --name db mysql/mysql-server --disable-log-bin --default-authentication-plugin=mysql_native_password
 
-docker run -d .................................. -e MYSQL_RANDOM_ROOT_PASSWORD=yes --net net --name db mariadb --disable-log-bin --default-authentication-plugin=mysql_native_password
+docker run -d .....-....... -e MYSQL_RANDOM_ROOT_PASSWORD=yes --net net --name db mariadb --disable-log-bin --default-authentication-plugin=mysql_native_password
 ```
 
 ## Set the timezone per environment variable
