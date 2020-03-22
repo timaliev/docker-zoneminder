@@ -23,9 +23,17 @@ To run with MySQL in a separate container use the command below:
 
 ```bash
 docker network create net
-docker run -d -e TZ=America/New_York -e MYSQL_USER=zmuser -e MYSQL_PASSWORD=zmpass -e MYSQL_DATABASE=zm -e MYSQL_ROOT_HOST=% --net net --name db mysql/mysql-server:5.7 --sql-mode=""
+docker run -d -e TZ=America/New_York -e MYSQL_USER=zmuser -e MYSQL_PASSWORD=zmpass -e MYSQL_DATABASE=zm -e MYSQL_ROOT_HOST=% --net net --name db mysql/mysql-server:5.7
 
 docker run -d --shm-size=4096m -e TZ=America/New_York -e ZM_DB_HOST=db --net net --name zm -p 80:80 quantumobject/docker-zoneminder:1.34
+```
+
+## For newest version of database mysql and mariadb
+
+```bash
+docker run -d .....-....... -e MYSQL_RANDOM_ROOT_PASSWORD=yes --net net --name db mysql/mysql-server --disable-log-bin --default-authentication-plugin=mysql_native_password
+
+docker run -d .....-....... -e MYSQL_RANDOM_ROOT_PASSWORD=yes --net net --name db mariadb --disable-log-bin --default-authentication-plugin=mysql_native_password
 ```
 
 ## Set the timezone per environment variable
@@ -104,7 +112,6 @@ services:
   db:
     image: mysql/mysql-server:5.7
     hostname: db
-    command: --sql_mode=''
     networks:
       net:
         aliases:
