@@ -28,7 +28,7 @@ docker run -d -e TZ=America/New_York -e MYSQL_USER=zmuser -e MYSQL_PASSWORD=zmpa
 docker run -d --shm-size=4096m -e TZ=America/New_York -e ZM_DB_HOST=db --net net --name zm -p 80:80 quantumobject/docker-zoneminder:1.34
 ```
 
-## For different newest version of database mysql and mariadb
+## For newest version of database mysql and mariadb
 
 ```bash
 docker run -d .....-....... -e MYSQL_RANDOM_ROOT_PASSWORD=yes --net net --name db mysql/mysql-server --disable-log-bin --default-authentication-plugin=mysql_native_password
