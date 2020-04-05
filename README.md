@@ -138,7 +138,9 @@ services:
     networks:
       - net
     volumes:
-      - /var/empty
+      - $PWD/log:/var/log/zm 
+      - $PWD/etc_zm:/etc/zm
+      - $PWD/config:/config
       - $PWD/zoneminder:/var/cache/zoneminder
       - type: tmpfs
         target: /dev/shm
@@ -162,7 +164,9 @@ services:
     networks:
       - net
     volumes:
-      - /var/empty
+      - $PWD/log:/var/log/zm 
+      - $PWD/etc_zm:/etc/zm
+      - $PWD/config:/config
       - $PWD/zoneminder:/var/cache/zoneminder
       - type: tmpfs
         target: /dev/shm
