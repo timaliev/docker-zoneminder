@@ -17,7 +17,7 @@ echo ${TZ:-America/New_York} > /etc/timezone
 # copy from backup of /etc/zm if config files missing .. 
 if [ ! -f /etc/zm/zm.conf ]; then
 	mkdir -p /etc/zm
-	cp -R /etc/backup_zm_conf/* /etc/zm
+	cp -R /etc/backup_zm_conf/. /etc/zm
 fi
 
 #if ZM_SERVER_HOST variable is provided in container use it as is, if not left 02-multiserver.conf unchanged
