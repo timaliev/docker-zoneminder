@@ -4,7 +4,7 @@ set -e
 
 #check if already configured or not
 if [ -f /etc/configured ]; then
-        echo 'already configured'
+        echo 'container already configured'
 	rm -rf /var/run/zm/* 
         /sbin/zm.sh&
 else
@@ -75,7 +75,7 @@ else
   EMPTYDATABASE=$(mysql -u$ZM_DB_USER -p$ZM_DB_PASS --host=$ZM_DB_HOST --port=$ZM_DB_PORT --batch --skip-column-names -e "use ${ZM_DB_NAME} ; show tables;" | wc -l )
   # [ -f /var/cache/zoneminder/configured ]
   if [[ $EMPTYDATABASE != 0 ]]; then
-        echo 'already configured.'
+        echo 'database already configured.'
         rm -rf /var/run/zm/* 
 	/sbin/zm.sh&
    else  
