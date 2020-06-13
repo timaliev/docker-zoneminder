@@ -48,6 +48,8 @@ else
  #check if Directory inside of /var/cache/zoneminder are present.
  if [ ! -d /var/cache/zoneminder/events ]; then
       mkdir -p /var/cache/zoneminder/{events,images,temp,cache}
+      chown -R root:www-data /var/cache/zoneminder /etc/zm /var/log/zm
+      chmod -R 770 /var/cache/zoneminder /etc/zm /var/log/zm
  fi
 
  # Handle the zmeventnotification.ini file
@@ -58,11 +60,6 @@ else
     fi
     ln -sf /config/zmeventnotification.ini /etc/zm/zmeventnotification.ini
   fi
-
-  chown -R root:www-data /var/cache/zoneminder /etc/zm /var/log/zm
-  chmod -R 770 /var/cache/zoneminder /etc/zm /var/log/zm
-
-
 
   # waiting for mysql
   while !(mysql_ready)
