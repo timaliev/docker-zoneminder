@@ -1,6 +1,6 @@
 #name of container: docker-zoneminder
 #versison of container: 0.6.4
-FROM quantumobject/docker-baseimage:18.04
+FROM quantumobject/docker-baseimage:20.04
 LABEL maintainer="Angel Rodriguez <angel@quantumobject.com>"
 
 ENV TZ America/New_York
