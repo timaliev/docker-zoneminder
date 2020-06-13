@@ -8,7 +8,7 @@ Docker container for [zoneminder v1.34.16][3]
 
 - [Docker][2]
 
-To install docker in Ubuntu 18.04 use the commands:
+To install docker in Ubuntu 20.04 use the commands:
 
 ```bash
 sudo apt-get update
@@ -68,8 +68,6 @@ Default value is America/New_York .
     .......... ==> ........... 
    
 ## Branch Available at the moment 
-
-quantumobject/docker-zoneminder:1.32
 
 quantumobject/docker-zoneminder:1.34
 
