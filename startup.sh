@@ -48,10 +48,13 @@ else
  #check if Directory inside of /var/cache/zoneminder are present.
  if [ ! -d /var/cache/zoneminder/events ]; then
       mkdir -p /var/cache/zoneminder/{events,images,temp,cache}
-      chown -R root:www-data /var/cache/zoneminder /etc/zm /var/log/zm
-      chmod -R 770 /var/cache/zoneminder /etc/zm /var/log/zm
+      chown -R root:www-data /var/cache/zoneminder 
+      chmod -R 770 /var/cache/zoneminder 
  fi
-
+ 
+ chown -R root:www-data /etc/zm /var/log/zm
+ chmod -R 770 /etc/zm /var/log/zm
+ 
  # Handle the zmeventnotification.ini file
  if [ -f /config/zmeventnotification.ini ]; then
     echo "Moving zmeventnotification.ini"
