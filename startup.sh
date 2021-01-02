@@ -101,3 +101,5 @@ else
    fi
    date > /etc/configured
 fi
+
+apache2ctl -D FOREGROUND 2>&1

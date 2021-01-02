@@ -1,19 +1,25 @@
-#name of container: docker-zoneminder
-#versison of container: 0.6.4
-FROM quantumobject/docker-baseimage:20.04
-LABEL maintainer="Angel Rodriguez <angel@quantumobject.com>"
+FROM arm64v8/ubuntu:focal
+LABEL maintainer="Diego Souto <diego.souto@gmail.com>"
+LABEL org.label-schema.schema-version="1.0"
+LABEL org.label-schema.name="zoneminder"
+LABEL org.label-schema.description="Zoneminder for ARM64"
+LABEL org.label-schema.url="http://zoneminder.com"
+LABEL org.label-schema.vcs-url="https://github.com/diegosc78/docker-zoneminder.git"
+LABEL org.label-schema.version=1.34
 
-ENV TZ America/New_York
-ENV ZM_DB_HOST db
-ENV ZM_DB_NAME zm 
-ENV ZM_DB_USER zmuser
-ENV ZM_DB_PASS zmpass
-ENV ZM_DB_PORT 3306
+ENV TZ=Europe/Madrid \
+    PHP_MEMORY_LIMIT=512M \
+    ZM_DB_HOST=mariadb \
+    ZM_DB_NAME=zm \
+    ZM_DB_USER=zmuser \
+    ZM_DB_PASS=zmpass \
+    ZM_DB_PORT=3306 \
+    APACHE_RUN_USER=www-data \
+    APACHE_RUN_GROUP=www-data \
+    APACHE_LOG_DIR=/var/log/apache2
 
-
-# Update the container
-# Installation of nesesary package/software for this containers...
-RUN echo "deb http://ppa.launchpad.net/iconnor/zoneminder-1.34/ubuntu `cat /etc/container_environment/DISTRIB_CODENAME` main" >> /etc/apt/sources.list  \
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y -q --no-install-recommends apt-transport-https gnupg curl wget ca-certificates locales
+RUN echo "deb http://ppa.launchpad.net/iconnor/zoneminder-1.34/ubuntu focal main" >> /etc/apt/sources.list  \
     && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 776FFB04 \
     && echo $TZ > /etc/timezone && apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y -q --no-install-recommends \
                                         libvlc-dev  \
@@ -39,7 +45,7 @@ RUN echo "deb http://ppa.launchpad.net/iconnor/zoneminder-1.34/ubuntu `cat /etc/
 RUN mkdir -p /etc/service/apache2  /var/log/apache2 ; sync 
 COPY apache2.sh /etc/service/apache2/run
 RUN chmod +x /etc/service/apache2/run \
-    && cp /var/log/cron/config /var/log/apache2/ \
+#    && cp /var/log/cron/config /var/log/apache2/ \
     && chown -R www-data /var/log/apache2
 
 # to add zm deamon to runit
@@ -87,4 +93,4 @@ VOLUME /var/cache/zoneminder /etc/zm /config /var/log/zm
 EXPOSE 80 9000 6802
 
 # Use baseimage-docker's init system.
-CMD ["/sbin/my_init"]
+CMD ["/etc/my_init.d/startup.sh"]
