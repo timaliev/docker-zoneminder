@@ -4,7 +4,7 @@ IMAGE_NAME ?= zoneminder
 CONTAINER_NAME ?= zoneminder
 CONTAINER_INSTANCE ?= manual
 PORTS ?= --network=zm -p 80:80 --link mariadb
-VOLUMES ?= -v /etc/localtime:/etc/localtime:ro -v dkvol_zm_cache:/var/cache/zoneminder -v dkvol_zm_logs:/var/log/zm -v dkvol_zm_events:/var/lib/zoneminder/events
+VOLUMES ?= -v /etc/localtime:/etc/localtime:ro -v dkvol_zm_cache:/var/cache/zoneminder -v dkvol_zm_logs:/var/log/zm -v dkvol_zm_events:/var/lib/zoneminder/events --shm-size=1024m
 ENV ?= -e TZ=Europe/Madrid
 
 build:
