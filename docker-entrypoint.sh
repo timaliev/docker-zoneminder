@@ -8,19 +8,18 @@ if [ -f /etc/configured ]; then
 	rm -rf /var/run/zm/* 
         /sbin/zm.sh&
 else
- #code that need to run only one time ....	
-	
+ #code that need to run only one time ...	
  #trays to fix problem with https://github.com/QuantumObject/docker-zoneminder/issues/22
  chown www-data /dev/shm
  mkdir -p /var/run/zm
  chown www-data:www-data /var/run/zm
 
  # set the memory limit of php
- sed  -i "s|memory_limit = .*|memory_limit = ${PHP_MEMORY_LIMIT:-512M}|" /etc/php/7.4/apache2/php.ini
+ sed  -i "s|memory_limit = .*|memory_limit = ${PHP_MEMORY_LIMIT:-512M}|" /etc/php/7.4/cli/php.ini
 
  #to fix problem with data.timezone that appear at 1.28.108 for some reason
- sed  -i "s|\;date.timezone =|date.timezone = \"${TZ:-America/New_York}\"|" /etc/php/7.4/apache2/php.ini
- echo ${TZ:-America/New_York} > /etc/timezone
+ sed  -i "s|\;date.timezone =|date.timezone = \"${TZ:-Europe/Madrid}\"|" /etc/php/7.4/cli/php.ini
+ echo ${TZ:-Europe/Madrid} > /etc/timezone
 
  # copy from backup of /etc/zm if config files missing .. 
  if [ ! -f /etc/zm/zm.conf ]; then
@@ -32,12 +31,12 @@ else
  if [ -v ZM_SERVER_HOST ]; then sed -i "s|#ZM_SERVER_HOST=|ZM_SERVER_HOST=${ZM_SERVER_HOST}|" /etc/zm/conf.d/02-multiserver.conf; fi
 
  # relate to /etc/zm/zm.conf and db configuration
- sed  -i "s|ZM_DB_HOST=.*|ZM_DB_HOST=${ZM_DB_HOST}|" /etc/zm/zm.conf
- sed  -i "s|ZM_DB_NAME=.*|ZM_DB_NAME=${ZM_DB_NAME}|" /etc/zm/zm.conf
- sed  -i "s|ZM_DB_USER=.*|ZM_DB_USER=${ZM_DB_USER}|" /etc/zm/zm.conf
- sed  -i "s|ZM_DB_PASS=.*|ZM_DB_PASS=${ZM_DB_PASS}|" /etc/zm/zm.conf
- sed  -i "s|ZM_DB_PORT=.*|ZM_DB_PORT=${ZM_DB_PORT}|" /etc/zm/zm.conf
- grep -q ZM_DB_PORT /etc/zm/zm.conf || echo ZM_DB_PORT=$ZM_DB_PORT >> /etc/zm/zm.conf
+ sed  -i "s|ZM_DB_HOST=.*|ZM_DB_HOST=${ZM_DB_HOST:-db}|" /etc/zm/zm.conf
+ sed  -i "s|ZM_DB_NAME=.*|ZM_DB_NAME=${ZM_DB_NAME:-zm}|" /etc/zm/zm.conf
+ sed  -i "s|ZM_DB_USER=.*|ZM_DB_USER=${ZM_DB_USER:-zmuser}|" /etc/zm/zm.conf
+ sed  -i "s|ZM_DB_PASS=.*|ZM_DB_PASS=${ZM_DB_PASS:-zmpass}|" /etc/zm/zm.conf
+ sed  -i "s|ZM_DB_PORT=.*|ZM_DB_PORT=${ZM_DB_PORT:-3306}|" /etc/zm/zm.conf
+ grep -q ZM_DB_PORT /etc/zm/zm.conf || echo ZM_DB_PORT=${ZM_DB_PORT:-3306} >> /etc/zm/zm.conf
 
 
  # Returns true once mysql can connect.
@@ -78,7 +77,7 @@ else
         echo 'database already configured.'
 	zmupdate.pl -nointeractive
         rm -rf /var/run/zm/* 
-	/sbin/zm.sh&
+	zmpkg.pl start >>/var/log/zm/zm.log 2>&1
    else  
         # if ZM_DB_NAME different that zm
         cp /usr/share/zoneminder/db/zm_create.sql /usr/share/zoneminder/db/zm_create.sql.backup
@@ -97,7 +96,7 @@ else
         date > /var/cache/zoneminder/configured
         zmupdate.pl -nointeractive
         rm -rf /var/run/zm/* 
-        /sbin/zm.sh&
+        zmpkg.pl start >>/var/log/zm/zm.log 2>&1
    fi
    date > /etc/configured
 fi

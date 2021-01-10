@@ -17,7 +17,6 @@ shell:
 	docker run --rm --name $(CONTAINER_NAME)-$(CONTAINER_INSTANCE) -i -t $(PORTS) $(VOLUMES) $(ENV) $(NS)/$(IMAGE_NAME):$(VERSION) /bin/bash
 
 runprereqs:
-	docker network create zm
 	docker run -d --rm -e MYSQL_ROOT_PASSWORD=zmpass -e MYSQL_DATABASE=zm -e MYSQL_USER=zmuser -e MYSQL_PASSWORD=zmpass --name mariadb --network=zm -p 3306:3306 -v dkvol_mysql_data:/var/lib/mysql arm64v8/mariadb:10-focal
 
 run: 
