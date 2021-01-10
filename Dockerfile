@@ -28,7 +28,7 @@ RUN echo $TZ > /etc/timezone  \
         ntp dialog ntpdate \
         msmtp libyaml-perl libjson-perl libapache2-mod-perl2 \
         libvlc-dev libvlccore-dev vlc ffmpeg \
-        apache2 \
+        apache2 php7.4 libapache2-mod-php php-mysql \
     && apt-get clean \
     && rm -rf /tmp/* /var/tmp/*  \
     && rm -rf /var/lib/apt/lists/*
@@ -50,7 +50,7 @@ RUN chown www-data /dev/shm \
     && chmod 740 /etc/zm/zm.conf && chown root:www-data /etc/zm/zm.conf \
     && chown -R www-data /var/log/apache2 \
     && echo "ServerName localhost" | tee /etc/apache2/conf-available/fqdn.conf \
-#    && ln -s /etc/apache2/conf-available/fqdn.conf /etc/apache2/conf-enabled/fqdn.conf \    
+    && ln -s /etc/apache2/conf-available/fqdn.conf /etc/apache2/conf-enabled/fqdn.conf \    
     && chown -R www-data:www-data /usr/share/zoneminder/ \
     && adduser www-data video \
     && cp -R /etc/zm/* /etc/backup_zm_conf/ \
@@ -79,7 +79,7 @@ RUN perl -MCPAN -e "install Digest::SHA1" \
     && perl -MCPAN -e "install Net::MQTT::Simple"
 
 # Configure apache modules and sites
-RUN a2enmod proxy proxy_balancer proxy_http ssl cgi rewrite \
+RUN a2enmod proxy proxy_balancer proxy_http ssl cgi rewrite php7.4 \
     && a2dissite default-ssl \
     && a2enconf zoneminder 
 #    && update-rc.d zoneminder enable 
