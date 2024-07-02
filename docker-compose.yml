@@ -1,5 +1,3 @@
----
-name: cctv
 version: "3.2"
 
 services:
@@ -13,8 +11,9 @@ services:
         aliases:
           - db
     volumes:
-      - mysqldata:/var/lib/mysql/
-      - $PWD/vol/mysql/log:/var/log
+      # - mysqldata:/var/lib/mysql/
+      - $PWD/vol/mysql/data/:/var/lib/mysql/
+      - $PWD/vol/mysql/log/:/var/log/
       - $PWD/vol/mysql/etc/my.cnf:/etc/my.cnf:ro
     deploy:
       mode: replicated
@@ -22,11 +21,10 @@ services:
       restart_policy:
         condition: on-failure
         max_attempts: 3
-        window: 120s
     healthcheck:
-      test: ["CMD-SHELL", "mysqladmin", "ping", "-h", "localhost", "--silent"]
-      interval: 10s
-      timeout: 10s
+      test: ["CMD", "mysqladmin", "ping", "--silent"]
+      interval: 5s
+      timeout: 5s
       retries: 5
 
   zoneminder:
@@ -37,11 +35,11 @@ services:
     networks:
       - net
     volumes:
-      # - $PWD/vol/zoneminder/log:/var/log/zm
-      # - $PWD/vol/zoneminder/etc:/etc/zm
-      # - $PWD/vol/zoneminder/config:/config
-      # - $PWD/vol/zoneminder/data:/var/cache/zoneminder
-      - zoneminderdata:/var/cache/zoneminder
+      - $PWD/vol/zoneminder/log:/var/log/zm
+      - $PWD/vol/zoneminder/etc:/etc/zm
+      - $PWD/vol/zoneminder/config:/config
+      - $PWD/vol/zoneminder/data:/var/cache/zoneminder
+      # - zoneminderdata:/var/cache/zoneminder
       - type: tmpfs
         target: /dev/shm
     ports:
@@ -51,18 +49,18 @@ services:
     depends_on:
       db:
         condition: service_healthy
+          #condition: service_completed_successfully
     deploy:
       mode: replicated
       replicas: 1
       restart_policy:
         condition: on-failure
         max_attempts: 3
-        window: 120s
 
 networks:
   net:
 
-volumes:
-  mysqldata:
-  zoneminderdata:
+  #volumes:
+    #mysqldata:
+    #zoneminderdata:
 ...
