@@ -21,23 +21,24 @@ ENV TZ=Europe/Madrid \
 USER root
 
 # Install pre-requisites
-RUN echo $TZ > /etc/timezone  \
-    && apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y -q --no-install-recommends \
-        apt-transport-https gnupg curl wget ca-certificates locales \
-        make gcc net-tools build-essential \
-        ntp dialog ntpdate \
-        msmtp libyaml-perl libjson-perl libapache2-mod-perl2 \
-        libvlc-dev libvlccore-dev vlc ffmpeg \
-        apache2 php7.4 libapache2-mod-php php-mysql \
+RUN echo "$TZ" > /etc/timezone  \
+      && apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y -q --no-install-recommends \
+      apt-transport-https software-properties-common \
+      gnupg curl wget ca-certificates locales \
+      make gcc net-tools build-essential \
+      ntp dialog ntpdate \
+      msmtp libyaml-perl libjson-perl libapache2-mod-perl2 \
+      libvlc-dev libvlccore-dev vlc ffmpeg \
+      apache2 php7.4 libapache2-mod-php php-mysql \
     && apt-get clean \
     && rm -rf /tmp/* /var/tmp/*  \
     && rm -rf /var/lib/apt/lists/*
 
 # Install ZM
-RUN echo "deb http://ppa.launchpad.net/iconnor/zoneminder-1.34/ubuntu focal main" >> /etc/apt/sources.list  \
-    && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 776FFB04 \
+# See https://launchpad.net/~iconnor/+archive/ubuntu/zoneminder-master
+RUN add-apt-repository ppa:iconnor/zoneminder-master \
     && apt-get update -y \
-    && apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y -q --no-install-recommends php-gd zoneminder \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y -q --no-install-recommends php-gd zoneminder \
     && apt-get clean \
     && rm -rf /tmp/* /var/tmp/*  \
     && rm -rf /var/lib/apt/lists/*
@@ -59,7 +60,7 @@ RUN chown www-data /dev/shm \
 
 # Cambozola
 WORKDIR /usr/src 
-RUN wget https://src.fedoraproject.org/lookaside/pkgs/cambozola/cambozola-latest.tar.gz/c4896a99702af61eead945ed58b5667b/cambozola-latest.tar.gz \
+RUN wget https://src.fedoraproject.org/lookaside/pkgs/cambozola/cambozola-latest.tar.gz/9ef41fd0b639d9580fa7fde8acb1f982/cambozola-latest.tar.gz \
     && tar -xzvf /usr/src/cambozola-latest.tar.gz \
     && mv cambozola-0.936/dist/cambozola.jar /usr/share/zoneminder/www  \
     && rm /usr/src/cambozola-latest.tar.gz \
