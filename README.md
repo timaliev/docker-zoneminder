@@ -15,3 +15,5 @@ Primary intended for Aarm64 platform (Raspberry Pi/Orange Pi/etc.).
 Run `docker compose up` in this directory to get mysql 8.0 container from DockerHub and latest Zoneminder container build (from https://launchpad.net/~iconnor/+archive/ubuntu/zoneminder-master).
 
 Access Zoneminder at [localhost](http://localhost/zm).
+
+Edit `docker-compose.yml` if you want to fiddle with parameters.

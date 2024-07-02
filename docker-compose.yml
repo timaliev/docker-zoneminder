@@ -1,0 +1,69 @@
+---
+name: cctv
+version: "3.2"
+
+services:
+  db:
+    image: arm64v8/mysql:8.0
+    container_name: db
+    hostname: db
+    env_file: db.env
+    networks:
+      net:
+        aliases:
+          - db
+    volumes:
+      - mysqldata:/var/lib/mysql/
+      - $PWD/vol/mysql/log:/var/log
+      - $PWD/vol/mysql/etc/my.cnf:/etc/my.cnf:ro
+    deploy:
+      mode: replicated
+      replicas: 1
+      endpoint_mode: dnsrr
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+        window: 120s
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin", "ping", "-h", "localhost", "--silent"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+  zoneminder:
+    build: docker-zm
+    container_name: zoneminder
+    hostname: zoneminder
+    env_file: zoneminder.env
+    networks:
+      - net
+    volumes:
+      # - $PWD/vol/zoneminder/log:/var/log/zm
+      # - $PWD/vol/zoneminder/etc:/etc/zm
+      # - $PWD/vol/zoneminder/config:/config
+      # - $PWD/vol/zoneminder/data:/var/cache/zoneminder
+      - zoneminderdata:/var/cache/zoneminder
+      - type: tmpfs
+        target: /dev/shm
+    ports:
+      - target: 80
+        published: 80
+        protocol: tcp
+    depends_on:
+      db:
+        condition: service_healthy
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+        window: 120s
+
+networks:
+  net:
+
+volumes:
+  mysqldata:
+  zoneminderdata:
+...
