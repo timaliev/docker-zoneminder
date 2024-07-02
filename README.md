@@ -8,12 +8,18 @@ Docker container for [latest zoneminder](https://launchpad.net/~iconnor/+archive
 
 This is a fork of [this repository](github.com:diegosc78/docker-zoneminder).
 
-Primary intended for Aarm64 platform (Raspberry Pi/Orange Pi/etc.).
+Primarily intended for [aarch64](https://en.wikipedia.org/wiki/AArch64) platform ([Raspberry Pi](https://www.raspberrypi.com/)/[Orange Pi](http://www.orangepi.org/)/etc.).
 
 ## Install
 
 Run `docker compose up` in this directory to get mysql 8.0 container from DockerHub and latest Zoneminder container build (from https://launchpad.net/~iconnor/+archive/ubuntu/zoneminder-master).
 
-Access Zoneminder at [localhost](http://localhost/zm).
+Access Zoneminder at [http://localhost/zm](http://localhost/zm).
 
-Edit `docker-compose.yml` if you want to fiddle with parameters.
+## Configuration
+
+Edit `docker-compose.yml` if you want to fiddle with volumes and or containers mounted paths.
+
+Edit `db.env` and `zoneminder.env` to change timezone.
+
+Finally, you can deep dive into configuration in `./vol/mysql/etc/` and `./vol/zoneminder/etc` and `./vol/zoneminder/config/`.
