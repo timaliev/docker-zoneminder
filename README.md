@@ -6,7 +6,7 @@ Docker container for [latest zoneminder](https://launchpad.net/~iconnor/+archive
 
 ## Description
 
-This is a fork of [this repository](github.com:diegosc78/docker-zoneminder).
+This is a fork of [this repository](github.com:diegosc78/docker-zoneminder). See original [README](docker-zm/README-orig.md).
 
 Primarily intended for [aarch64](https://en.wikipedia.org/wiki/AArch64) platform ([Raspberry Pi](https://www.raspberrypi.com/)/[Orange Pi](http://www.orangepi.org/)/etc.).
 
@@ -18,7 +18,7 @@ Access Zoneminder at [http://localhost/zm](http://localhost/zm).
 
 ## Configuration
 
-Edit `docker-compose.yml` if you want to fiddle with volumes and or containers mounted paths.
+Edit `docker-compose.yml` if you want to fiddle with volumes and or containers' mounted paths.
 
 Edit `db.env` and `zoneminder.env` to change timezone.
 
